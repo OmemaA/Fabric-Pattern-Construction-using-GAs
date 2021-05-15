@@ -4,7 +4,7 @@ import numpy as np
 from pprint import pprint
 from PIL import Image
 import matplotlib.pyplot as plt #importing matplotlib
-import cv2
+# import cv2
 from scipy import ndimage
 
 pixels = 32
@@ -16,34 +16,39 @@ def imhist(im):
 	for i in range(m):
 		for j in range(n):
 			h[int(im[i, j])]+=1
-	return np.array(h)/(m*n)
+	return np.array(h)
 
 def cumsum(h):
 	return [sum(h[:i+1]) for i in range(len(h))]
 
 def histeq(im):
-	h = imhist(im)
-	cdf = np.array(cumsum(h))
-	sk = np.uint8(255 * cdf)
-	s1, s2 = im.shape
-	Y = np.zeros_like(im)
-	for i in range(0, s1):
-		for j in range(0, s2):
-			Y[i, j] = sk[int(im[i, j])]
-	H = imhist(Y)
-	return  h, H
+    h = imhist(im)
+	# cdf = np.array(cumsum(h))
+    cdf = h.cumsum()
+	# sk = np.uint8(255 * cdf)
+	# s1, s2 = im.shape
+	# Y = np.zeros_like(im)
+	# for i in range(0, s1):
+	# 	for j in range(0, s2):
+	# 		Y[i, j] = sk[int(im[i, j])]
+	# H = imhist(Y)
+    cdf_normalized = cdf * h.max()/ cdf.max()
+    
+    return  h, cdf_normalized
 
 class EvolutionaryAlgorithm:
     def __init__(self):
         self.offsprings = 10
-        self.generations = 50
+        self.generations = 5000
         self.fitness = None
 
     def initialPopulation(self):
         values = np.random.randint(0, 255, (pixels, pixels,3))
         gray = np.dot(values[...,:3],[0.299, 0.587, 0.114])
-        #img = Image.fromarray(gray)
-        #img.show()
+        # gray = np.average(values, axis=-1)
+        # img = Image.fromarray(gray)
+        # img.show()
+        # exit(1)
         return gray
 
 
@@ -51,9 +56,9 @@ class EvolutionaryAlgorithm:
         gx, gy = np.gradient(path)
         h, new_h= histeq(path)
         result=np.subtract(h,new_h)
-        gx=sum(sum(x) if isinstance(x, list) else x for x in gx)
-        gy=sum(sum(x) if isinstance(x, list) else x for x in gy)
-        cost=sum(gx)+sum(gy)+sum(result)
+        gx=sum([sum(x) for x in gx])
+        gy=sum([sum(x) for x in gy])
+        cost=(gx)+(gy)+sum(result)
         return cost
         
     def mutation(self, chromosomes):
@@ -69,6 +74,7 @@ class EvolutionaryAlgorithm:
                 elif number == 2:
                     value = np.random.randint(0,255,(1,1,3))
                     pixel[pts[0]] = float(np.dot(value[...,:3], [0.299, 0.587, 0.114]))
+                    # pixel[pts[0]] = np.average(value, axis = -1)
         replicas.append(chromosomes)
         #print(len(replicas),len(chromosomes))
         return replicas
