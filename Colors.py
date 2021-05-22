@@ -19,7 +19,7 @@ class ColorPalette:
         palette = [[palette[c]/255, palette[c+1]/255, palette[c+2]/255] for c in range(0,len(palette),3) if palette[c] != 0]
 
         return palette
-    
+ 
     def displayPalette(self):
         original = Image.open(self.link)
         img = original.copy()
@@ -47,5 +47,5 @@ class ColorPalette:
         # plt.savefig("Palette.png")
 
 
-c = ColorPalette("Reference Images/1.jpg", 5)
-c.displayPalette()
+# c = ColorPalette("Reference Images/1.jpg", 5)
+# c.displayPalette()
