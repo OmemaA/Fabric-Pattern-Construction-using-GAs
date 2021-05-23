@@ -3,37 +3,29 @@ from Colors import ColorPalette
 from PIL import Image
 from PIL import ImageDraw
 import numpy as np
-from random import randint
-from random import random
-from random import choice
+import random 
+from ImageQuality import ImageQuality
 
 class Shapes:
     def __init__(self):
-        self.colors = ColorPalette("Reference Images/5.jpg", 10).createPalette()
+        self.colors = ColorPalette("Reference Images/2.jpg", 10).createPalette()
         self.block = Image.new('RGBA', (200,200))
-        # self.iters = int(randint(3,10))
         self.iters = 1
         self.lines = []
         self.polygons = []
         limits= (0,0), (200,0), (0,200), (200,200)
         self.division(limits)
 
-        # Attempt to draw polygons with colors filled in
-        # print(m_fill)
-        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='pink')
+        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='yellow')
         for i in range(len(self.polygons)):
-            m_fill = choice(self.colors)
+            m_fill = random.choice(self.colors)
             m_fill = tuple([int(x*255) for x in m_fill])
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=m_fill)
-            
-        # for i in range(len(self.lines)):
-        #     ImageDraw.Draw(self.block).line(self.lines[i], fill='black')
-        # self.block.show()
+  
         self.form_tile(np.array(self.block))
-    
         
     def generate_random_point(self, p1, p2):
-        u = random()
+        u = random.random()
         pt_x, pt_y= int((1-u)*p1[0] + u*p2[0]), int((1-u)*p1[1] + u*p2[1])
         return (pt_x, pt_y)
 
@@ -61,6 +53,7 @@ class Shapes:
 
         return first_half, second_half
 
+    # TODO: Aiman
     def form_tile(self,chromosomes):
         hor=np.flip(chromosomes,0)
         vert=np.flip(chromosomes,1)
@@ -72,35 +65,29 @@ class Shapes:
         img = Image.fromarray(f)
         img.show()
 
-
     def generate_pattern(self):
         limits = []
-
         self.division(0,0, limits)
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).line(self.polygons[i])
         self.block.show()
-        
 
     def division(self, limits, iterx=0, itery=0):
-
-        # print("iterx", iterx, "itery", itery)
         if(iterx == self.iters):
-            # print("HEREE")
             iterx = 0
             return
         if(itery == self.iters):
             itery = 0
             return
         pt1, pt2 = (0,0), (0,0)
-        option = randint(0,1)
+        option = random.randint(0,1)
         segment = None
         if option == 0: # top and bottom 
             pt1, pt2 = self.generate_random_point(limits[0], limits[1]), self.generate_random_point(limits[2], limits[3])  
         elif option == 1: # left and right
             pt1, pt2 = self.generate_random_point(limits[0], limits[2]), self.generate_random_point(limits[1], limits[3])  
         elif option == 2: # vertical and horizontal
-            v_side, h_side = randint(0,1), randint(0,1)
+            v_side, h_side = random.randint(0,1), random.randint(0,1)
             if v_side == 0: # top 
                 pt1 = self.generate_random_point(limits[0], limits[1])
                 segment = "T"
@@ -116,14 +103,25 @@ class Shapes:
                 segment += "R"
 
         self.lines.append([pt1, pt2])
-
         new_limits = self.new_limits(limits, pt1, pt2, option, segment)
         self.polygons.extend(new_limits)
-        # print(new_limits)
         self.division(new_limits[0], iterx+1, itery)
         self.division(new_limits[1], iterx, itery+1)
 
-
 s = Shapes()
 
+class GA:
+    def __init__(self):
+        self.offsprings = 10
+        self.generations = 500
+        self.fitness = None
 
+    def fitness_function(self, img):
+        quality = ImageQuality(img)
+        return quality.get_fitness()
+
+
+# i = Image.open("Reference Images/6.jpg")
+# x = Image.open("test.jpg")
+# print(GA().fitness_function(i))
+# print(GA().fitness_function(x))
