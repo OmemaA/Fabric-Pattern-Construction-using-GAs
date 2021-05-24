@@ -5,14 +5,23 @@ import numpy as np
 import random 
 
 class Shapes:
-    def __init__(self):
-        self.colors = ColorPalette("Reference Images/5.jpg", 10).createPalette()
+    def __init__(self, child=False):
         self.block = Image.new('RGBA', (200,200))
         self.iters = 1
         self.lines = []
         self.polygons = []
-        limits= [(0,0), (200,0), (0,200), (200,200)]
-        self.division(limits)
+        self.colors = []
+        self.colorPalette = ColorPalette("Reference Images/5.jpg", 10).createPalette()
+        if not child:
+            limits= [(0,0), (200,0), (0,200), (200,200)]
+            # Generating random polygons to contruct pattern
+            self.division(limits)
+            # Storing color for each polygon 
+            for _ in range(len(self.polygons)):
+                m_fill = random.choice(self.colorPalette)
+                m_fill = tuple([int(x*255) for x in m_fill])
+                self.colors.append(m_fill)
+            self.generate_pattern()
 
     def generate_random_point(self, p1, p2):
         u = random.random()
@@ -44,7 +53,7 @@ class Shapes:
         return first_half, second_half
 
     # TODO: Aiman
-    def form_tile(self,chromosomes):
+    def form_tile(self,chromosomes, name):
         hor=np.flip(chromosomes,0)
         vert=np.flip(chromosomes,1)
         left=np.flip(hor,1)
@@ -53,16 +62,16 @@ class Shapes:
         array_tuple = (a,b)
         f=np.vstack(array_tuple)
         img = Image.fromarray(f)
-        img.show()
+        img.save('Pattern'+str(name)+'.png', 'PNG')
+        # img.show()
 
     def generate_pattern(self):
+        self.block = Image.new('RGBA', (200,200))
         ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='white')
         for i in range(len(self.polygons)):
-            m_fill = random.choice(self.colors)
-            m_fill = tuple([int(x*255) for x in m_fill])
-            ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=m_fill)
+            ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
             
-        self.form_tile(np.array(self.block))
+        # self.form_tile(np.array(self.block), name)
  
     def division(self, limits, iterx=0, itery=0):
         if(iterx == self.iters):
@@ -100,5 +109,5 @@ class Shapes:
         self.division(new_limits[0], iterx+1, itery)
         self.division(new_limits[1], iterx, itery+1)
 
-s = Shapes()
-s.generate_pattern()
+# s = Shapes()
+# s.generate_pattern()

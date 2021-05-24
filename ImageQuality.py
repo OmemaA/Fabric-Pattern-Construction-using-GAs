@@ -4,7 +4,7 @@ import numpy as np
 
 class ImageQuality():
     def __init__(self, img):
-        self.img = img 
+        self.img = img
     
     def get_fitness(self):
         return (self.dullness_score())
@@ -56,9 +56,10 @@ class ImageQuality():
         return (maximum - minimum)/(maximum + minimum)
 
 
-i = Image.open("Reference Images/6.jpg")
-# i = Image.new('RGBA', (200,200))
-IQ = ImageQuality(i).dullness_score()
+# i = Image.open("Pattern0.png")
+# # i = Image.new('RGBA', (200,200))
+# IQ = ImageQuality(i).get_fitness()
+# print(IQ)
 
 
 # cv2.imshow("image",self.img)
