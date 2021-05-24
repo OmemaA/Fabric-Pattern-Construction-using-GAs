@@ -3,7 +3,7 @@ from Shapes import Shapes
 import random
 import numpy as np
 import math
-
+from PIL import Image
 class GA:
     def __init__(self):
         self.popSize = 10
@@ -99,12 +99,14 @@ class GA:
         offspring.generate_pattern()
 
         return offspring
+    
 
     def cycle(self):
         generations = 0
         chromosomes = self.initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.compute_fitness(indv) for indv in chromosomes]
+        tile_size=random.randint(10,50)
         while generations < self.generations:
             # print("Generation: ", generations)
             # Saving image after every 250 generations
@@ -113,7 +115,7 @@ class GA:
                 for x in chromosomes:
                     fit = min([self.compute_fitness(i) for i in chromosomes])
                     if self.compute_fitness(x) == fit:
-                        x.form_tile(np.array(x.block), str(generations))
+                        x.form_tile(np.array(x.block), str(generations),tile_size)
                         print("Fitness:", fit)
                         break
             for _ in range(self.offsprings):
@@ -133,7 +135,7 @@ class GA:
             # compute fitness of each individual in population
             self.fitness = [self.compute_fitness(indv) for indv in chromosomes]
             generations +=1
-
+    
     def truncation(self, chromosomes, size):
         indexes = [(self.fitness[i], i) for i in range(len(self.fitness))]
         # sorts list accoridng to fitness
