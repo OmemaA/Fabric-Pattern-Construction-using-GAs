@@ -42,56 +42,8 @@ class GA:
         t_colors, b_colors = [], []
 
         # Top half
-        for iter, i in enumerate(parent1.polygons):
-            v1 = (line[1][0]-line[0][0], line[1][1]- line[0][1]) # x2-x1, y2-y1
-            accepted, discarded = [], []
-            for x in i:
-                v2 = (line[1][0]-x[0], line[1][1]-x[1]) #x2 - xA, y2-yA
-                dot = v1[0]*v2[1] - v1[1]*v2[0]  # Cross product
-                if dot >= 0: # top or on the line 
-                    accepted.append(x)
-                else:
-                    discarded.append(x)
-            if len(accepted) > 2:
-                top.append(accepted)
-                t_colors.append(parent1.colors[iter])
-            elif len(accepted) > 1: # adjust coordinates
-                min = math.inf
-                index = discarded[0]
-                for coord in discarded:
-
-                    if (orient):
-                        accepted.append((coord[0], line[0][1]))
-                    else:
-                        accepted.append((line[0][0], coord[1]))
-                top.append(accepted)
-                t_colors.append(parent1.colors[iter])
-
-        # Bottom half
-        for iter, i in enumerate(parent2.polygons):
-            v1 = (line[1][0]-line[0][0], line[1][1]- line[0][1]) # x2-x1, y2-y1
-            accepted, discarded = [], []
-            for x in i:
-                v2 = (line[1][0]-x[0], line[1][1]-x[1]) #x2 - xA, y2-yA
-                dot = v1[0]*v2[1] - v1[1]*v2[0]  # Cross product
-                if dot <= 0: # top or on the line 
-                    accepted.append(x)
-                else:
-                    discarded.append(x)
-            if len(accepted) > 2:
-                bottom.append(accepted)
-                b_colors.append(parent2.colors[iter])
-            elif len(accepted) > 1: # adjust coordinates
-                min = math.inf
-                index = discarded[0]
-                for coord in discarded:
-                    if (orient):
-                        accepted.append((coord[0], line[0][1]))
-                    else:
-                        accepted.append((line[0][0], coord[1]))
-                    
-                bottom.append(accepted)
-                b_colors.append(parent2.colors[iter])
+        top, t_colors = self.__choose_vertices(parent1, line, top, t_colors, orient, True)
+        bottom, b_colors = self.__choose_vertices(parent2, line, bottom, b_colors, orient, False)
 
         offspring = Shapes(True)
         offspring.polygons.extend(top)
@@ -103,12 +55,45 @@ class GA:
         return offspring
     
 
+    def __choose_vertices(self, parent, line, segment, seg_color, orient, upper):
+        for iter, i in enumerate(parent.polygons):
+            v1 = (line[1][0]-line[0][0], line[1][1]- line[0][1])
+            accepted, discarded = [], []
+            for x in i:
+                v2 = (line[1][0]-x[0], line[1][1]-x[1])
+                dot = v1[0]*v2[1] - v1[1]*v2[0]
+                if upper:
+                    if dot >= 0: 
+                        accepted.append(x)
+                    else:
+                        discarded.append(x)
+                
+                else:
+                    if dot <= 0:
+                        accepted.append(x)
+                    else:
+                        discarded.append(x)
+
+            if len(accepted) > 2:
+                segment.append(accepted)
+                seg_color.append(parent.colors[iter])
+            
+            elif len(accepted) > 1:
+                for coord in discarded:
+                    if (orient):
+                        accepted.append((coord[0], line[0][1]))
+                    else:
+                        accepted.append((line[0][0], coord[1]))
+                segment.append(accepted)
+                seg_color.append(parent.colors[iter])
+        return segment, seg_color
+
     def cycle(self):
         generations = 0
         chromosomes = self.initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.compute_fitness(indv) for indv in chromosomes]
-        tile_size= random.randint(5,40)
+        tile_size= 20
         while generations < self.generations+1:
             # print("Generation: ", generations)
             # Saving image after every 250 generations
