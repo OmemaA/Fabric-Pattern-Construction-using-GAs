@@ -52,19 +52,30 @@ class Shapes:
 
         return first_half, second_half
 
-    # TODO: Aiman
-    def form_tile(self,chromosomes, name):
-        hor=np.flip(chromosomes,0)
-        vert=np.flip(chromosomes,1)
-        left=np.flip(hor,1)
-        a=np.hstack((hor,chromosomes))
-        b=np.hstack((left,vert))
-        array_tuple = (a,b)
-        f=np.vstack(array_tuple)
-        img = Image.fromarray(f)
+    def form_tile(self,chromosomes, name,tile_size):
+        array =  np.empty((tile_size, tile_size), dtype=object)
+        for columns in range(tile_size):
+            for rows in range(tile_size):
+                trans=random.randint(0,3)
+                if trans==0:
+                    trans_ch=np.fliplr(chromosomes)
+                elif trans==1:
+                    trans_ch=np.flipud(chromosomes)
+                elif trans==2:
+                    horiz=np.fliplr(chromosomes)
+                    trans_ch=np.flipud(horiz)
+                else:
+                     trans_ch=chromosomes
+                array[rows][columns]=trans_ch
+        hstack=[]
+        for row in array:
+            r=np.hstack(tuple(row))
+            hstack.append(r)
+        hstack=np.array(hstack)
+        vstack=np.vstack(tuple(hstack))
+        img = Image.fromarray(vstack)
+        img.show()
         img.save('Pattern'+str(name)+'.png', 'PNG')
-        # img.show()
-
     def generate_pattern(self):
         self.block = Image.new('RGBA', (200,200))
         ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='white')
