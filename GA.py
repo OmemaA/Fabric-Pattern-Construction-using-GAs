@@ -1,8 +1,5 @@
-from types import TracebackType
 from ImageQuality import ImageQuality
 from Shapes import Shapes
-from PIL import Image
-from PIL import ImageDraw
 import random
 import numpy as np
 import math
@@ -26,11 +23,13 @@ class GA:
     def mutation(self, population):
         # randomly assign a color from color palette
         for i in population:
-            index = random.randint(0, (len(i.polygons)-1))
-            m_fill = random.choice(i.colorPalette)
-            m_fill = tuple([int(x*255) for x in m_fill])
-            i.colors[index] = m_fill
-            i.generate_pattern()
+            chance = random.randint(1,10)
+            if chance < 5:
+                index = random.randint(0, (len(i.polygons)-1))
+                m_fill = random.choice(i.colorPalette)
+                m_fill = tuple([int(x*255) for x in m_fill])
+                i.colors[index] = m_fill
+                i.generate_pattern()
 
     def crossover(self, parent1, parent2):
         line = [(0,100) , (200,100)]
@@ -100,7 +99,6 @@ class GA:
         offspring.generate_pattern()
 
         return offspring
-
 
     def cycle(self):
         generations = 0
