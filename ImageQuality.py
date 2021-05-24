@@ -34,8 +34,9 @@ class ImageQuality():
         total_score = 0
         # Iterate through unique colours
         for index, colour in enumerate(colours):
-            total_score += sum(colour)
-
+            score = colour[0] + colour[1] + colour[2]*self.global_contrast()
+            # total_score += sum(colour)
+            total_score += score
         return total_score/len(colours)
             
     # def color_hormonies(self):
@@ -56,9 +57,8 @@ class ImageQuality():
         return (maximum - minimum)/(maximum + minimum)
 
 
-# i = Image.open("Pattern0.png")
-# # i = Image.new('RGBA', (200,200))
-# IQ = ImageQuality(i).get_fitness()
+# i = Image.open("Patterns_PehliDafa/Pattern10.png")
+# IQ = ImageQuality(i).area_occupied()
 # print(IQ)
 
 
