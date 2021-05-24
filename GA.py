@@ -32,7 +32,11 @@ class GA:
                 i.generate_pattern()
 
     def crossover(self, parent1, parent2):
-        line = [(0,100) , (200,100)]
+        orient = random.choice([0,1]) # 0: vertical, 1: horizontal
+        
+        line = [(100,0) , (100,200)]
+        if (orient):
+            line = [(0, 100) , (200,100)]
         # top and bottom parents
         top, bottom = [], []
         t_colors, b_colors = [], []
@@ -55,12 +59,11 @@ class GA:
                 min = math.inf
                 index = discarded[0]
                 for coord in discarded:
-                    p1, p2, p3 = np.asarray(line[0]), np.asarray(line[1]), np.asarray(x)
-                    d = np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
-                    if d < min: 
-                        min = d
-                        index = coord
-                accepted.append((index[0], line[0][1]))
+
+                    if (orient):
+                        accepted.append((coord[0], line[0][1]))
+                    else:
+                        accepted.append((line[0][0], coord[1]))
                 top.append(accepted)
                 t_colors.append(parent1.colors[iter])
 
@@ -82,14 +85,13 @@ class GA:
                 min = math.inf
                 index = discarded[0]
                 for coord in discarded:
-                    p1, p2, p3 = np.asarray(line[0]), np.asarray(line[1]), np.asarray(x)
-                    d = np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
-                    if d < min: 
-                        min = d
-                        index = coord
-                accepted.append((index[0], line[0][1]))
+                    if (orient):
+                        accepted.append((coord[0], line[0][1]))
+                    else:
+                        accepted.append((line[0][0], coord[1]))
+                    
                 bottom.append(accepted)
-                b_colors.append(parent1.colors[iter])
+                b_colors.append(parent2.colors[iter])
 
         offspring = Shapes(True)
         offspring.polygons.extend(top)
@@ -106,11 +108,11 @@ class GA:
         chromosomes = self.initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.compute_fitness(indv) for indv in chromosomes]
-        tile_size=random.randint(10,50)
-        while generations < self.generations:
+        tile_size= random.randint(5,40)
+        while generations < self.generations+1:
             # print("Generation: ", generations)
             # Saving image after every 250 generations
-            if generations % 10 == 0:
+            if generations % self.generations == 0:
                 print('Generation', generations+1)
                 for x in chromosomes:
                     fit = min([self.compute_fitness(i) for i in chromosomes])

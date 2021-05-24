@@ -11,7 +11,7 @@ class Shapes:
         self.lines = []
         self.polygons = []
         self.colors = []
-        self.colorPalette = ColorPalette("Reference Images/5.jpg", 10).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/1.jpg", 10).createPalette()
         if not child:
             limits= [(0,0), (200,0), (0,200), (200,200)]
             # Generating random polygons to contruct pattern
@@ -31,23 +31,23 @@ class Shapes:
     def new_limits(self, limits, pt1, pt2, option, segment=None):
         first_half, second_half = [], []
         if option == 0:  # slant and vertical
-            first_half = [(limits[0]), (pt1), (limits[2]), (pt2)] # x1, y1, x2, y2
-            second_half = [(pt1), (limits[1]), (pt2), (limits[3])]
+            first_half = [(limits[0]), (pt1), (pt2), (limits[2]) ] # x1, y1, x2, y2
+            second_half = [(pt1), (limits[1]), (limits[3]), (pt2)]
         elif option == 1: # slant and horizontal
-            first_half = [(limits[0]), (limits[1]), (pt1), (pt2)]
-            second_half = [(pt1), (pt2), (limits[2]), (limits[3])]
+            first_half = [(limits[0]), (limits[1]), (pt2), (pt1)]
+            second_half = [(pt1), (pt2), (limits[3]), (limits[2])]
         elif option == 2:
             if segment == "TL":
                 first_half = [(limits[0]), (pt1), (pt2)]
-                second_half = [(pt1), (limits[1]), (pt2), (limits[2]), (limits[3])]
+                second_half = [(pt1), (pt2), (limits[1]), (limits[3]), (limits[2])]
             elif segment == "TR":
-                first_half = [(limits[0]), (pt1), (limits[1]), (limits[2], (pt2))]
+                first_half = [(limits[0]), (pt1), pt2, (limits[3]), (limits[2])]
                 second_half = [(pt1), (limits[1]), (pt2)]
             elif segment == "BL":
                 first_half = [(pt1), (limits[2]), (pt2)]
-                second_half = [(limits[0]), (limits[1]), (pt1), (pt2), (limits[3])]
+                second_half = [(limits[0]), (limits[1]), (limits[3]), (pt1), pt2]
             elif segment == "BR":
-                first_half = [(limits[0]), (limits[1]), (limits[2]), (pt1), (pt2)]
+                first_half = [(limits[0]), (limits[1]), (pt2), (pt1), (limits[2])]
                 second_half = [(pt1), (pt2), (limits[3])]
 
         return first_half, second_half
@@ -74,8 +74,9 @@ class Shapes:
         hstack=np.array(hstack)
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
-        img.show()
+        # img.show()
         img.save('Pattern'+str(name)+'.png', 'PNG')
+
     def generate_pattern(self):
         self.block = Image.new('RGBA', (200,200))
         ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='white')
@@ -92,7 +93,7 @@ class Shapes:
             itery = 0
             return
         pt1, pt2 = (0,0), (0,0)
-        option = random.randint(0,1)
+        option = random.randint(0,2)
         segment = None
         if option == 0: # top and bottom 
             pt1, pt2 = self.generate_random_point(limits[0], limits[1]), self.generate_random_point(limits[2], limits[3])  
@@ -117,6 +118,13 @@ class Shapes:
         self.lines.append([pt1, pt2])
         new_limits = self.new_limits(limits, pt1, pt2, option, segment)
         self.polygons.extend(new_limits)
+        
+        # for _ in range(2):
+        #     m_fill = random.choice(self.colorPalette)
+        #     m_fill = tuple([int(x*255) for x in m_fill])
+        #     self.colors.append(m_fill)
+
+        # self.generate_pattern()
         self.division(new_limits[0], iterx+1, itery)
         self.division(new_limits[1], iterx, itery+1)
 
