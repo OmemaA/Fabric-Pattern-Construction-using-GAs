@@ -11,11 +11,11 @@ class Shapes:
         self.lines = []
         self.polygons = []
         self.colors = []
-        self.colorPalette = ColorPalette("Reference Images/3.jpg", 10).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/9.jpg", 5).createPalette()
         if not child:
             limits= [(0,0), (200,0), (0,200), (200,200)]
             # Generating random polygons to contruct pattern
-            self.division(limits)
+            self.__division(limits)
             # Storing color for each polygon 
             for _ in range(len(self.polygons)):
                 m_fill = random.choice(self.colorPalette)
@@ -23,12 +23,12 @@ class Shapes:
                 self.colors.append(m_fill)
             self.generate_pattern()
 
-    def generate_random_point(self, p1, p2):
+    def __generate_random_point(self, p1, p2):
         u = random.random()
         pt_x, pt_y= int((1-u)*p1[0] + u*p2[0]), int((1-u)*p1[1] + u*p2[1])
         return (pt_x, pt_y)
 
-    def new_limits(self, limits, pt1, pt2, option, segment=None):
+    def __new_limits(self, limits, pt1, pt2, option, segment=None):
         first_half, second_half = [], []
         if option == 0:  # slant and vertical
             first_half = [(limits[0]), (pt1), (pt2), (limits[2]) ] # x1, y1, x2, y2
@@ -74,18 +74,20 @@ class Shapes:
         hstack=np.array(hstack)
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
-        # img.show()
         img.save('Pattern'+str(name)+'.png', 'PNG')
+        # img.show()
 
     def generate_pattern(self):
         self.block = Image.new('RGBA', (200,200))
-        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill='white')
+        m_fill = random.choice(self.colorPalette)
+        m_fill = tuple([int(x*255) for x in m_fill])
+        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=m_fill)
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
-            
+             
         # self.form_tile(np.array(self.block), name)
  
-    def division(self, limits, iterx=0, itery=0):
+    def __division(self, limits, iterx=0, itery=0):
         if(iterx == self.iters):
             iterx = 0
             return
@@ -96,37 +98,36 @@ class Shapes:
         option = random.randint(0,2)
         segment = None
         if option == 0: # top and bottom 
-            pt1, pt2 = self.generate_random_point(limits[0], limits[1]), self.generate_random_point(limits[2], limits[3])  
+            pt1, pt2 = self.__generate_random_point(limits[0], limits[1]), self.__generate_random_point(limits[2], limits[3])  
         elif option == 1: # left and right
-            pt1, pt2 = self.generate_random_point(limits[0], limits[2]), self.generate_random_point(limits[1], limits[3])  
+            pt1, pt2 = self.__generate_random_point(limits[0], limits[2]), self.__generate_random_point(limits[1], limits[3])  
         elif option == 2: # vertical and horizontal
             v_side, h_side = random.randint(0,1), random.randint(0,1)
             if v_side == 0: # top 
-                pt1 = self.generate_random_point(limits[0], limits[1])
+                pt1 = self.__generate_random_point(limits[0], limits[1])
                 segment = "T"
             elif v_side == 1: # bottom
-                pt1 = self.generate_random_point(limits[2], limits[3])
+                pt1 = self.__generate_random_point(limits[2], limits[3])
                 segment = "B"
 
             if h_side == 0: # left
-                pt2 = self.generate_random_point(limits[0], limits[2])
+                pt2 = self.__generate_random_point(limits[0], limits[2])
                 segment += "L"
             elif h_side == 1: # right
-                pt2 = self.generate_random_point(limits[1], limits[3])
+                pt2 = self.__generate_random_point(limits[1], limits[3])
                 segment += "R"
 
         self.lines.append([pt1, pt2])
-        new_limits = self.new_limits(limits, pt1, pt2, option, segment)
+        new_limits = self.__new_limits(limits, pt1, pt2, option, segment)
         self.polygons.extend(new_limits)
         
         # for _ in range(2):
         #     m_fill = random.choice(self.colorPalette)
-        #     m_fill = tuple([int(x*255) for x in m_fill])
         #     self.colors.append(m_fill)
 
         # self.generate_pattern()
-        self.division(new_limits[0], iterx+1, itery)
-        self.division(new_limits[1], iterx, itery+1)
+        self.__division(new_limits[0], iterx+1, itery)
+        self.__division(new_limits[1], iterx, itery+1)
 
 # s = Shapes()
 # s.generate_pattern()

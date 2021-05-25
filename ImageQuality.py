@@ -38,12 +38,6 @@ class ImageQuality():
             # total_score += sum(colour)
             total_score += score
         return total_score/len(colours)
-            
-    # def color_hormonies(self):
-    #     # convert image to HSV (hue, saturation, value)
-    #     img = self.img.convert('HSV')
-    #     n_img = np.array(img)
-    #     # print(n_img)
 
     def global_contrast(self):
         # Convert image to grayscale to get lightness channel
@@ -60,34 +54,3 @@ class ImageQuality():
 # i = Image.open("Patterns_PehliDafa/Pattern10.png")
 # IQ = ImageQuality(i).area_occupied()
 # print(IQ)
-
-
-# cv2.imshow("image",self.img)
-# cv2.waitKey(0)
-
-# LAB_image = cv2.cvtColor(np.array(self.img), cv2.COLOR_BGR2LAB)
-# # Lightness channel
-# L = cv2.split(LAB_image)[0] 
-
-# # compute global min and max intensity values
-# minimum = np.min(L)
-# maximum = np.max(L)
-
-# # compute contrast
-# avg_contrast = (maximum - minimum)/(maximum + minimum)
-
-
-
-# kernel = np.ones((5,5),np.uint8)
-# min = cv2.erode(L,kernel,iterations = 1)
-# max = cv2.dilate(L,kernel,iterations = 1)
-
-# # convert min and max to floats
-# min = min.astype(np.float64) 
-# max = max.astype(np.float64) 
-
-# # compute local contrast
-# contrast = (max-min)/(max+min)
-
-# # get average across whole image
-# average_contrast = 100*np.mean(contrast)

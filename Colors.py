@@ -24,7 +24,7 @@ class ColorPalette:
         original = Image.open(self.link)
         img = original.copy()
 
-        palette = self.createPalette()
+        palette = self.createPalette(False)
 
         fig = plt.figure()
         spec = gridspec.GridSpec(ncols=2, nrows=1,width_ratios=[2, 1])
@@ -43,9 +43,9 @@ class ColorPalette:
         plt.barh(y, x, color=palette)
         plt.axis('off')
 
-        plt.show()
-        # plt.savefig("Palette.png")
+        plt.savefig("Palettes/Palette7.png")
+        # plt.show()
 
 
-# c = ColorPalette("Reference Images/1.jpg", 5)
+# c = ColorPalette("Reference Images/7.jpg", 5)
 # c.displayPalette()
