@@ -9,9 +9,6 @@ class ColorPalette:
         self.totalColors = colors
 
     def createPalette(self):
-        original = Image.open(self.link)
-        img = original.copy()
-
         img = Image.open(self.link)
         reduced = img.convert('P', palette=Image.ADAPTIVE, colors=self.totalColors)
 
@@ -24,7 +21,7 @@ class ColorPalette:
         original = Image.open(self.link)
         img = original.copy()
 
-        palette = self.createPalette(False)
+        palette = self.createPalette()
 
         fig = plt.figure()
         spec = gridspec.GridSpec(ncols=2, nrows=1,width_ratios=[2, 1])

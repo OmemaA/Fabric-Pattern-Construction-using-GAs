@@ -2,7 +2,6 @@ from ImageQuality import ImageQuality
 from Shapes import Shapes
 import random
 import numpy as np
-import math
 from PIL import Image
 class GA:
     def __init__(self):
@@ -35,13 +34,12 @@ class GA:
     def __crossover(self, parent1, parent2):
         orient = random.choice([0,1]) # 0: vertical, 1: horizontal
         line = [(100,0) , (100,200)]
-        if (orient):
+        if orient:
             line = [(0, 100) , (200,100)]
         # top and bottom parents
         top, bottom = [], []
         t_colors, b_colors = [], []
 
-        # Top half
         top, t_colors = self.__choose_vertices(parent1, line, top, t_colors, orient, True)
         bottom, b_colors = self.__choose_vertices(parent2, line, bottom, b_colors, orient, False)
 
@@ -56,10 +54,10 @@ class GA:
     
     def __choose_vertices(self, parent, line, segment, seg_color, orient, upper):
         for iter, i in enumerate(parent.polygons):
-            v1 = (line[1][0]-line[0][0], line[1][1]- line[0][1])
+            v1 = (line[1][0]-line[0][0], line[1][1]- line[0][1]) #line vector
             accepted, discarded = [], []
-            for x in i:
-                v2 = (line[1][0]-x[0], line[1][1]-x[1])
+            for x in i: 
+                v2 = (line[1][0]-x[0], line[1][1]-x[1]) # line and point vector
                 dot = v1[0]*v2[1] - v1[1]*v2[0]
                 if upper:
                     if dot >= 0: accepted.append(x)
@@ -67,7 +65,6 @@ class GA:
                 else:
                     if dot <= 0: accepted.append(x)
                     else: discarded.append(x)
-
             if len(accepted) > 2:
                 segment.append(accepted)
                 seg_color.append(parent.colors[iter])
@@ -87,8 +84,8 @@ class GA:
         chromosomes = self.__initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
-        # tile_size= random.choice([2,5,10,15,20,25,30,35,40,45,50])
-        tile_size = 5
+        tile_size= random.choice([2,5,10,15,20,25,30,35,40,45,50])
+        # tile_size = 5
         while generations < self.generations+1:
             print("Generation: ", generations)
             if generations % self.generations == 0:
@@ -105,7 +102,7 @@ class GA:
                 #         x.form_tile(np.array(x.block), str(generations),tile_size)
                 #         print("Fitness Min:", fit)
                 #         break
-            for _ in range(self.offsprings):
+            for _ in range(self.offsprings): # 5
                 # parent selection
                 parent1, parent2 = self.__random(chromosomes)[:2]
                 # cross over

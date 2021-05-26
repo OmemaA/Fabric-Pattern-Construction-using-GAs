@@ -11,7 +11,7 @@ class Shapes:
         self.lines = []
         self.polygons = []
         self.colors = []
-        self.colorPalette = ColorPalette("Reference Images/9.jpg", 5).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/6.jpg", 5).createPalette()
         if not child:
             limits= [(0,0), (200,0), (0,200), (200,200)]
             # Generating random polygons to contruct pattern
@@ -19,7 +19,7 @@ class Shapes:
             # Storing color for each polygon 
             for _ in range(len(self.polygons)):
                 m_fill = random.choice(self.colorPalette)
-                m_fill = tuple([int(x*255) for x in m_fill])
+                m_fill = tuple([int(x*255) for x in m_fill]) 
                 self.colors.append(m_fill)
             self.generate_pattern()
 
@@ -36,7 +36,7 @@ class Shapes:
         elif option == 1: # slant and horizontal
             first_half = [(limits[0]), (limits[1]), (pt2), (pt1)]
             second_half = [(pt1), (pt2), (limits[3]), (limits[2])]
-        elif option == 2:
+        elif option == 2: # vertical and horizontal
             if segment == "TL":
                 first_half = [(limits[0]), (pt1), (pt2)]
                 second_half = [(pt1), (pt2), (limits[1]), (limits[3]), (limits[2])]
@@ -95,7 +95,8 @@ class Shapes:
             itery = 0
             return
         pt1, pt2 = (0,0), (0,0)
-        option = random.randint(0,2)
+        # option = random.randint(0,2)
+        option = 2
         segment = None
         if option == 0: # top and bottom 
             pt1, pt2 = self.__generate_random_point(limits[0], limits[1]), self.__generate_random_point(limits[2], limits[3])  
