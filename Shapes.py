@@ -95,8 +95,7 @@ class Shapes:
             itery = 0
             return
         pt1, pt2 = (0,0), (0,0)
-        # option = random.randint(0,2)
-        option = 2
+        option = random.randint(0,2)
         segment = None
         if option == 0: # top and bottom 
             pt1, pt2 = self.__generate_random_point(limits[0], limits[1]), self.__generate_random_point(limits[2], limits[3])  

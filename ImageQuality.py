@@ -1,4 +1,5 @@
 # import cv2
+from os import popen
 from PIL import Image
 import numpy as np
 import statistics
@@ -8,7 +9,7 @@ class ImageQuality():
         self.img = img
     
     def get_fitness(self):
-        return (self.dullness_score())
+        return (self.dullness_score()*self.area_occupied())
 
     def area_occupied(self):
         img = self.img.convert('RGB')
@@ -19,20 +20,18 @@ class ImageQuality():
         colours, counts = np.unique(n_img.reshape(-1,3), axis=0, return_counts=1)
 
         # Iterate through unique colours
-        # proportion = [20,20,19,18,20]
         proportion =[]
         for index, colour in enumerate(colours):
             count = counts[index]
             proportion.append((100 * count) / (h * w))
+        # if only one color present
+        if len(proportion) == 1:
+            proportion.append(0)
         std = statistics.stdev(proportion)
-        # p_max, p_min = max(proportion), min(proportion)
-        new = []
-        mean = 100/len(colours)
-        for i in proportion:
-            new.append((i-mean)/std)
-        # normalized_std = (statistics.stdev(new)) / (100/len(colours))
-        return new
-            # print(f"   Colour: {colour}, count: {count}, proportion: {proportion:.2f}%")
+        if std == 0: 
+            std = 0.5
+        return 1/std
+        # print(f"   Colour: {colour}, count: {count}, proportion: {proportion:.2f}%")
 
     def dullness_score(self):
         # convert image to HSV (hue, saturation, value)
@@ -45,7 +44,7 @@ class ImageQuality():
         total_score = 0
         # Iterate through unique colours
         for colour in colours:
-            score = colour[0] + colour[1] + colour[2]*self.global_contrast()
+            score = int(colour[0]) + int(colour[1]) + int(colour[2])*self.global_contrast()
             # total_score += sum(colour)
             total_score += score
         return total_score/len(colours)
@@ -55,8 +54,8 @@ class ImageQuality():
         grayscale = self.img.convert('L')
 
         # compute global min and max intensity values
-        minimum = np.min(grayscale)
-        maximum = np.max(grayscale)
+        minimum = int(np.min(grayscale))
+        maximum = int(np.max(grayscale))
 
         # compute contrast
         return (maximum - minimum)/(maximum + minimum)

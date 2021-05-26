@@ -19,17 +19,13 @@ class GA:
         quality = ImageQuality(img.block)
         return quality.get_fitness()
 
-    def __mutation(self, population):
-        # randomly assign a color from color palette
-        for i in population:
-            chance = random.randint(1,10)
-            # 50% probability of a chromosome's color being changed
-            if chance < 5:
-                index = random.randint(0, (len(i.polygons)-1))
-                m_fill = random.choice(i.colorPalette)
-                m_fill = tuple([int(x*255) for x in m_fill])
-                i.colors[index] = m_fill
-                i.generate_pattern()
+    def __mutation(self, offspring):
+        index = random.randint(0, (len(offspring.polygons)-1))
+        m_fill = random.choice(offspring.colorPalette)
+        m_fill = tuple([int(x*255) for x in m_fill])
+        offspring.colors[index] = m_fill
+        offspring.generate_pattern()
+        return offspring
 
     def __crossover(self, parent1, parent2):
         orient = random.choice([0,1]) # 0: vertical, 1: horizontal
@@ -84,8 +80,7 @@ class GA:
         chromosomes = self.__initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
-        tile_size= random.choice([2,5,10,15,20,25,30,35,40,45,50])
-        # tile_size = 5
+        tile_size= random.choice([5,10,15,20,25,30,35,40,45,50])
         while generations < self.generations+1:
             print("Generation: ", generations)
             if generations % self.generations == 0:
@@ -96,24 +91,18 @@ class GA:
                         x.form_tile(np.array(x.block), str(generations),tile_size)
                         print("Fitness Max:", fit)
                         break
-                # for x in chromosomes:
-                #     fit = max([self.__compute_fitness(i) for i in chromosomes])
-                #     if self.__compute_fitness(x) == fit:
-                #         x.form_tile(np.array(x.block), str(generations),tile_size)
-                #         print("Fitness Min:", fit)
-                #         break
             for _ in range(self.offsprings): # 5
                 # parent selection
                 parent1, parent2 = self.__random(chromosomes)[:2]
                 # cross over
                 offspring  = self.__crossover(parent1, parent2)
+                # mutation
+                if random.random() < self.mutationRate:
+                    offspring = self.__mutation(offspring)
                 # add new offspring to population
                 chromosomes.append(offspring)
                 # compute fitness of new offspring
                 self.fitness.append(self.__compute_fitness(offspring))
-                # mutation
-                if random.random() < self.mutationRate:
-                    self.__mutation(chromosomes)
             # survivor selection
             chromosomes = self.__truncation(chromosomes,self.popSize)
             # compute fitness of each individual in population
