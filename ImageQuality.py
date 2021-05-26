@@ -59,8 +59,3 @@ class ImageQuality():
 
         # compute contrast
         return (maximum - minimum)/(maximum + minimum)
-
-
-# i = Image.open("Patterns Generated/Palette 1/Final_1.png")
-# IQ = ImageQuality(i).area_occupied()
-# print(IQ)

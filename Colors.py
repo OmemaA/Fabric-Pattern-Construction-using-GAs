@@ -40,9 +40,8 @@ class ColorPalette:
         plt.barh(y, x, color=palette)
         plt.axis('off')
 
-        plt.savefig("Palettes/Palette7.png")
+        plt.savefig("Palettes/Palette13.png")
         # plt.show()
 
-
-# c = ColorPalette("Reference Images/7.jpg", 5)
+# c = ColorPalette("Reference Images/13.jpg", 5)
 # c.displayPalette()

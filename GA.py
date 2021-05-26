@@ -2,7 +2,8 @@ from ImageQuality import ImageQuality
 from Shapes import Shapes
 import random
 import numpy as np
-from PIL import Image
+import matplotlib.pyplot as plt
+
 class GA:
     def __init__(self):
         self.popSize = 10
@@ -10,6 +11,9 @@ class GA:
         self.fitness = None
         self.offsprings = 5
         self.mutationRate = 0.5
+        self.generations_score = [[] for _ in range(self.generations)]
+        self.iterations = 5
+        self.tileSize = random.choice([5,10,15,20,25,30,35])
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -76,11 +80,10 @@ class GA:
         return segment, seg_color
 
     def cycle(self):
-        generations = 0
+        generations, scores = 0, []
         chromosomes = self.__initial_population() 
         # compute fitness of each individual in population
         self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
-        tile_size= random.choice([5,10,15,20,25,30,35,40,45,50])
         while generations < self.generations+1:
             print("Generation: ", generations)
             if generations % self.generations == 0:
@@ -88,7 +91,7 @@ class GA:
                 for x in chromosomes:
                     fit = max([self.__compute_fitness(i) for i in chromosomes])
                     if self.__compute_fitness(x) == fit:
-                        x.form_tile(np.array(x.block), str(generations),tile_size)
+                        x.form_tile(np.array(x.block), str(generations),self.tileSize)
                         print("Fitness Max:", fit)
                         break
             for _ in range(self.offsprings): # 5
@@ -108,6 +111,9 @@ class GA:
             # compute fitness of each individual in population
             self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
             generations +=1
+            
+            scores.append((max(self.fitness), sum(self.fitness)/len(self.fitness)))
+        return scores
     
     def __truncation(self, chromosomes, size):
         indexes = [(self.fitness[i], i) for i in range(len(self.fitness))]
@@ -121,7 +127,33 @@ class GA:
     def __random(self, chromosomes):
         # randomly selects 2 chromosomes from population
         return random.sample(chromosomes, 2)
-   
+
+    def plot_graph(self):
+        BFS = [i[0][0] for i in self.generations_score]
+        AFS = [i[0][1] for i in self.generations_score]
+        generations = [i+1 for i in range(self.generations)]
+        plt.plot(generations, BFS, label="Avg best-so-far Fitness")
+        plt.plot(generations, AFS, label="Avg average-so-far Fitness")
+        plt.xlabel('No. of generations')
+        plt.ylabel('Fitness value')
+        plt.legend()
+        plt.show()
+
+    def epochs(self):
+        iters = [self.cycle() for _ in range(self.iterations)]
+        gen = 0
+        while gen < self.generations:
+            best, avg = 0, 0
+            for val in iters:
+                best += val[gen][0]
+                avg += val[gen][1]
+            best = best / len(iters)
+            avg = avg / len(iters)
+            self.generations_score[gen].append((best,avg))
+            gen +=1 
+        self.plot_graph()
 
 ga = GA()
+# ga.epochs()
+
 ga.cycle()

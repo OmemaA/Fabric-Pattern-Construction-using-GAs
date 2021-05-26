@@ -11,7 +11,7 @@ class Shapes:
         self.lines = []
         self.polygons = []
         self.colors = []
-        self.colorPalette = ColorPalette("Reference Images/6.jpg", 5).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/7.jpg", 5).createPalette()
         if not child:
             limits= [(0,0), (200,0), (0,200), (200,200)]
             # Generating random polygons to contruct pattern
@@ -121,11 +121,6 @@ class Shapes:
         new_limits = self.__new_limits(limits, pt1, pt2, option, segment)
         self.polygons.extend(new_limits)
         
-        # for _ in range(2):
-        #     m_fill = random.choice(self.colorPalette)
-        #     self.colors.append(m_fill)
-
-        # self.generate_pattern()
         self.__division(new_limits[0], iterx+1, itery)
         self.__division(new_limits[1], iterx, itery+1)
 
