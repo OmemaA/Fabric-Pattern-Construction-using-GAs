@@ -13,7 +13,8 @@ class GA:
         self.mutationRate = 0.5
         self.generations_score = [[] for _ in range(self.generations)]
         self.iterations = 5
-        self.tileSize = random.choice([5,10,15,20,25,30,35])
+        # self.tileSize = random.choice([5,10,15,20,25,30,35])
+        self.tileSize = 2
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -91,7 +92,7 @@ class GA:
                 for x in chromosomes:
                     fit = max([self.__compute_fitness(i) for i in chromosomes])
                     if self.__compute_fitness(x) == fit:
-                        x.form_tile(np.array(x.block), str(generations),self.tileSize)
+                        x.form_tile(np.array(x.block), str(generations), self.tileSize)
                         print("Fitness Max:", fit)
                         break
             for _ in range(self.offsprings): # 5

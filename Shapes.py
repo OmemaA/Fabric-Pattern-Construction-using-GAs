@@ -1,8 +1,54 @@
 from Colors import ColorPalette
 from PIL import Image
 from PIL import ImageDraw
+from Lsystem import Lsystem
 import numpy as np
 import random 
+
+rules = [
+    {
+        "F":"F+F--F+F", "S":"F",
+        "direct":180,
+        "angle":60,
+        "iter":5,
+        "title":"Koch"
+    },
+    {
+        "X":"X+YF+", "Y":"-FX-Y", "S":"FX",
+        "direct":0,
+        "angle":90,
+        "iter":13,
+        "title":"Dragon"
+    },
+    {
+        "f":"F-f-F", "F":"f+F+f", "S":"f",
+        "direct":0,
+        "angle":60,
+        "iter":7,
+        "title":"Triangle"
+    },
+    {
+        "X":"F-[[X]+X]+F[+FX]-X", "F":"FF", "S":"X",
+        "direct":-45,
+        "angle":25,
+        "iter":6,
+        "title":"Plant"
+    },
+    {
+        "S":"X", "X":"-YF+XFX+FY-", "Y":"+XF-YFY-FX+",
+        "direct":0,
+        "angle":90,
+        "iter":6,
+        "title":"Hilbert"
+    },
+    {
+        "S":"L--F--L--F", "L":"+R-F-R+", "R":"-L+F+L-",
+        "direct":0,
+        "angle":45,
+        "iter":10,
+        "title":"Sierpinski"
+    },
+]
 
 class Shapes:
     def __init__(self, child=False):
@@ -11,12 +57,21 @@ class Shapes:
         self.lines = []
         self.polygons = []
         self.colors = []
-        self.colorPalette = ColorPalette("Reference Images/7.jpg", 5).createPalette()
-        if not child:
+        self.fracColor = []
+        self.colorPalette = ColorPalette("Reference Images/9.jpg", 5).createPalette()
+        self.child = child
+        # Creating fractals 
+        rule = random.choice([0,1,3,4,5])
+        self.design = Lsystem(rules[rule]).get_lines()
+        for _ in range(len(self.design)):
+            m_fill = random.choice(self.colorPalette)
+            m_fill = tuple([int(x*255) for x in m_fill]) 
+            self.fracColor.append(m_fill)
+        # Storing color for each polygon 
+        if not self.child:
             limits= [(0,0), (200,0), (0,200), (200,200)]
             # Generating random polygons to contruct pattern
             self.__division(limits)
-            # Storing color for each polygon 
             for _ in range(len(self.polygons)):
                 m_fill = random.choice(self.colorPalette)
                 m_fill = tuple([int(x*255) for x in m_fill]) 
@@ -52,7 +107,7 @@ class Shapes:
 
         return first_half, second_half
 
-    def form_tile(self,chromosomes, name,tile_size):
+    def form_tile(self,chromosomes, name, tile_size):
         array =  np.empty((tile_size, tile_size), dtype=object)
         for columns in range(tile_size):
             for rows in range(tile_size):
@@ -84,8 +139,9 @@ class Shapes:
         ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=m_fill)
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
-             
-        # self.form_tile(np.array(self.block), name)
+        for i in range(len(self.design)):
+            ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
+        # self.form_tile(np.array(self.block), " lsystem", 5)
  
     def __division(self, limits, iterx=0, itery=0):
         if(iterx == self.iters):
@@ -124,5 +180,5 @@ class Shapes:
         self.__division(new_limits[0], iterx+1, itery)
         self.__division(new_limits[1], iterx, itery+1)
 
-# s = Shapes()
+s = Shapes()
 # s.generate_pattern()
