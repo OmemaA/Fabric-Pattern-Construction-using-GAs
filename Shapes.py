@@ -4,6 +4,7 @@ from PIL import ImageDraw
 from Lsystem import Lsystem
 import numpy as np
 import random 
+from PIL import Image, ImageFilter
 
 rules = [
     {
@@ -129,7 +130,9 @@ class Shapes:
         hstack=np.array(hstack)
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
-        img.save('Pattern'+str(name)+'.png', 'PNG')
+        image=img.filter(ImageFilter.ModeFilter(size=25))
+        final=image.filter(ImageFilter.SMOOTH_MORE)
+        final.save('Pattern'+str(name)+'.png', 'PNG')
         # img.show()
 
     def generate_pattern(self):
