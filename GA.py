@@ -13,8 +13,10 @@ class GA:
         self.mutationRate = 0.5
         self.generations_score = [[] for _ in range(self.generations)]
         self.iterations = 5
-        # self.tileSize = random.choice([5,10,15,20,25,30,35])
-        self.tileSize = 2
+        self.hall_of_fame = 0 # turn it to 1 to activate HOF
+        self.hof_list = []
+        self.tileSize = random.choice([5,10,15,20,25,30,35])
+        # self.tileSize = 2
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -82,19 +84,30 @@ class GA:
 
     def cycle(self):
         generations, scores = 0, []
-        chromosomes = self.__initial_population() 
+        chromosomes = self.__initial_population()
         # compute fitness of each individual in population
         self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
         while generations < self.generations+1:
             print("Generation: ", generations)
             if generations % self.generations == 0:
                 # print('Generation', generations+1)
-                for x in chromosomes:
-                    fit = max([self.__compute_fitness(i) for i in chromosomes])
-                    if self.__compute_fitness(x) == fit:
-                        x.form_tile(np.array(x.block), str(generations), self.tileSize)
-                        print("Fitness Max:", fit)
-                        break
+                if self.hall_of_fame and generations > 0:
+                    fit = max(self.hof_list, key= lambda x: x[1])
+                    x:Shapes = fit[0]
+                    x.form_tile(np.array(x.block), str(generations), self.tileSize)
+                    print("HOF Fitness Max:", fit[1]," Overall Min Fitness: ",min(self.fitness) , "Tile Size: ", self.tileSize)
+                    for x in self.hof_list:
+                        print(x)
+                    break    
+                else:
+                    for x in chromosomes:
+                        fit = [self.__compute_fitness(i) for i in chromosomes]
+                        if self.__compute_fitness(x) == fit:
+                            x.form_tile(np.array(x.block), str(generations), self.tileSize)
+                            print("Fitness Max:", max(fit), "Fitness Min: ", min(fit), "Tile Size: ", self.tileSize)
+                            break                
+            
+            
             for _ in range(self.offsprings): # 5
                 # parent selection
                 parent1, parent2 = self.__random(chromosomes)[:2]
@@ -111,6 +124,10 @@ class GA:
             chromosomes = self.__truncation(chromosomes,self.popSize)
             # compute fitness of each individual in population
             self.fitness = [self.__compute_fitness(indv) for indv in chromosomes]
+
+            if self.hall_of_fame:
+                max_idx = self.fitness.index(max(self.fitness))
+                self.hof_list.append( (chromosomes[max_idx], max(self.fitness) )) #tuple of (fittest image, fitness value)
             generations +=1
             
             scores.append((max(self.fitness), sum(self.fitness)/len(self.fitness)))
