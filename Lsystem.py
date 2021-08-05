@@ -1,6 +1,7 @@
 from math import sin, cos, pi
-import matplotlib.pyplot as pl
-from matplotlib import collections
+# import matplotlib.pyplot as pl
+# from matplotlib import collections
+# import random
 
 class Lsystem(object):
     def __init__(self, rule):
@@ -16,11 +17,11 @@ class Lsystem(object):
         self.rule = rule
         self.info = info
 
-    def get_lines(self):
+    def get_lines(self, tile_size):
         d = self.rule['direct']
         a = self.rule['angle']
         p = (0.0, 0.0)
-        l = 1.0
+        l = 2.0
         lines = []
         stack = []
         for c in self.info:

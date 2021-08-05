@@ -1,4 +1,3 @@
-from numpy.lib.shape_base import tile
 from Colors import ColorPalette
 from PIL import Image
 from PIL import ImageDraw
@@ -6,8 +5,6 @@ from Lsystem import Lsystem
 import numpy as np
 import random 
 from PIL import Image, ImageFilter
-
-tileSize = 4
 
 rules = [
     {
@@ -52,13 +49,6 @@ rules = [
         "iter":10,
         "title":"Sierpinski"
     },
-    {
-        "S":"L--F--L--F", "L":"+R-F-R+", "R":"-L+F+L-",
-        "direct":0,
-        "angle":90,
-        "iter":20,
-        "title":"Sallu"
-    }
 ]
 
 class Shapes:
@@ -69,15 +59,15 @@ class Shapes:
         self.polygons = []
         self.colors = []
         self.fracColor = []
-        self.colorPalette = ColorPalette("Reference Images/5.jpg", 5).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/10.jpg", 5).createPalette()
         self.child = child
         # Creating fractals 
         # rule = random.choice([0,1,3,4,5])
-        rule = 6
-        self.design = Lsystem(rules[rule]).get_lines(tileSize)
-        m_fill = random.choice(self.colorPalette)
-        m_fill = tuple([int(x*255) for x in m_fill]) 
+        rule = 1
+        self.design = Lsystem(rules[rule]).get_lines()
         for _ in range(len(self.design)):
+            m_fill = random.choice(self.colorPalette)
+            m_fill = tuple([int(x*255) for x in m_fill]) 
             self.fracColor.append(m_fill)
         # Storing color for each polygon 
         if not self.child:
@@ -141,7 +131,7 @@ class Shapes:
         hstack=np.array(hstack)
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
-        # img = self.generate_LTree(img)
+        img = self.generate_LTree(img)
         # img = Image.fromarray(vstack)
         img.save('Pattern'+str(name)+'.png', 'PNG')
         # image=img.filter(ImageFilter.ModeFilter(size=25))
@@ -157,18 +147,18 @@ class Shapes:
         ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=m_fill)
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
+        # for i in range(len(self.design)):
+        #     ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
         # tmp_image = self.block
         # 50% chance to apply smoothing 
-        if random.choice([1,2]) == 1:
+        if random.choice([1,2]) == 0:
             self.block = self.block.filter(ImageFilter.ModeFilter(size=25))
             self.block = self.block.filter(ImageFilter.SMOOTH_MORE)
-        for i in range(len(self.design)):
-            ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
-        # self.form_tile(np.array(self.block), " lsystem", tileSize)
+        self.form_tile(np.array(self.block), " lsystem", 2)
 
     def generate_LTree(self, img):
         for i in range(len(self.design)):
-            ImageDraw.Draw(img).line(self.design[i], fill=self.fracColor[i], width=2)
+            ImageDraw.Draw(img).line(self.design[i], fill=self.fracColor[i])
         return img
 
 
@@ -209,5 +199,5 @@ class Shapes:
         self.__division(new_limits[0], iterx+1, itery)
         self.__division(new_limits[1], iterx, itery+1)
 
-# s = Shapes()
-# s.generate_pattern()
+s = Shapes()
+s.generate_pattern()

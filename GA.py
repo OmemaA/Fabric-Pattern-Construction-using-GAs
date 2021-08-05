@@ -1,13 +1,16 @@
 from ImageQuality import ImageQuality
 from Shapes import Shapes
+from Shapes import tileSize
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 
+# tileSize = 4
+
 class GA:
     def __init__(self):
         self.popSize = 10
-        self.generations = 40
+        self.generations = 25
         self.fitness = None
         self.offsprings = 5
         self.mutationRate = 0.5
@@ -15,8 +18,8 @@ class GA:
         self.iterations = 5
         self.hall_of_fame = 0 # turn it to 1 to activate HOF
         self.hof_list = []
-        self.tileSize = random.choice([5,10,15,20,25,30,35])
-        # self.tileSize = 2
+        # tileSize = random.choice([5,10,15,20,25,30,35])
+        
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -33,7 +36,7 @@ class GA:
         offspring.colors[index] = m_fill
         offspring.generate_pattern()
         return offspring
-
+ 
     def __crossover(self, parent1, parent2):
         orient = random.choice([0,1]) # 0: vertical, 1: horizontal
         line = [(100,0) , (100,200)]
@@ -94,20 +97,18 @@ class GA:
                 if self.hall_of_fame and generations > 0:
                     fit = max(self.hof_list, key= lambda x: x[1])
                     x:Shapes = fit[0]
-                    x.form_tile(np.array(x.block), str(generations), self.tileSize)
-                    print("HOF Fitness Max:", fit[1]," Overall Min Fitness: ",min(self.fitness) , "Tile Size: ", self.tileSize)
+                    x.form_tile(np.array(x.block), str(generations), tileSize)
+                    print("HOF Fitness Max:", fit[1]," Overall Min Fitness: ",min(self.fitness) , "Tile Size: ", tileSize)
                     for x in self.hof_list:
                         print(x)
                     break    
                 else:
+                    fit = max(self.fitness)
                     for x in chromosomes:
-                        fit = [self.__compute_fitness(i) for i in chromosomes]
                         if self.__compute_fitness(x) == fit:
-                            x.form_tile(np.array(x.block), str(generations), self.tileSize)
-                            print("Fitness Max:", max(fit), "Fitness Min: ", min(fit), "Tile Size: ", self.tileSize)
-                            break                
-            
-            
+                            x.form_tile(np.array(x.block), str(generations), tileSize)
+                            print("Fitness Max:", fit)
+                            break             
             for _ in range(self.offsprings): # 5
                 # parent selection
                 parent1, parent2 = self.__random(chromosomes)[:2]
