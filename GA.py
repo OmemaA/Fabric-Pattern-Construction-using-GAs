@@ -19,7 +19,8 @@ class GA:
         self.hall_of_fame = 0 # turn it to 1 to activate HOF
         self.hof_list = []
         # self.tileSize = random.choice([5,10,15,20,25,30,35])
-        self.tileSize = 4
+        # self.tileSize = random.choice([5,10, 15])
+        self.tileSize = 6
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -103,11 +104,11 @@ class GA:
                         print(x)
                     break 
                 else:
+                    fit = max([self.__compute_fitness(i) for i in chromosomes])
                     for x in chromosomes:
-                        fit = max([self.__compute_fitness(i) for i in chromosomes])
                         if self.__compute_fitness(x) == fit:
-                            # for i in range(len(x.design)):
-                            #     ImageDraw.Draw(x.block).line(x.design[i], fill=x.fracColor[i])
+                            for i in range(len(x.design)):
+                                ImageDraw.Draw(x.block).line(x.design[i], fill=x.fracColor[i])
                             x.form_tile(np.array(x.block), str(generations), self.tileSize)
                             # print("Fitness Max:", max(fit), "Fitness Min: ", min(fit), "Tile Size: ", self.tileSize)              
                             break

@@ -49,6 +49,13 @@ rules = [
         "iter":10,
         "title":"Sierpinski"
     },
+    {
+        "S":"F--L--F", "L":"+R-R+", "R":"-L+F+L-",
+        "direct":0,
+        "angle":45,
+        "iter":10,
+        "title":"Sierpinski"
+    },
 ]
 
 class Shapes:
@@ -59,11 +66,11 @@ class Shapes:
         self.polygons = []
         self.colors = []
         self.fracColor = []
-        self.colorPalette = ColorPalette("Reference Images/9.jpg", 5).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/5.jpg", 6).createPalette()
         self.child = child
         # Creating fractals 
         # rule = random.choice([0,1,3,4,5])
-        rule = 5
+        rule = 6
         self.design = Lsystem(rules[rule]).get_lines()
         for _ in range(len(self.design)):
             m_fill = random.choice(self.colorPalette)
@@ -110,6 +117,15 @@ class Shapes:
         return first_half, second_half
 
     def form_tile(self,chromosomes, name, tile_size):
+        
+        # REMOVE AFTER TESTING
+        # for i in range(len(self.design)):
+        #     ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
+        
+        # chromosomes = np.array(self.block)
+        ########
+        
+        
         array =  np.empty((tile_size, tile_size), dtype=object)
         for columns in range(tile_size):
             for rows in range(tile_size):
@@ -132,18 +148,23 @@ class Shapes:
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
 
+
         img.save('Pattern'+str(name)+'.png', 'PNG')
         # image=img.filter(ImageFilter.ModeFilter(size=25))
         # final=image.filter(ImageFilter.SMOOTH_MORE)
 
         # img.save('Pattern'+str(name)+'.png', 'PNG')
+        
+        ### REMOVE AFTER TESTING
         # img.show()
 
     def generate_pattern(self):
         self.block = Image.new('RGBA', (200,200))
         # m_fill = random.choice(self.colorPalette)
         # m_fill = tuple([int(x*255) for x in m_fill])
-        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=(255,255,255))
+        m_fill = (255,255,255)
+        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=m_fill)
+
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
         
@@ -156,8 +177,8 @@ class Shapes:
         self.block = self.block.filter(ImageFilter.ModeFilter(size=25))
         self.block = self.block.filter(ImageFilter.SMOOTH_MORE)
 
-
-        self.form_tile(np.array(self.block), " lsystem", 5)
+        ### REMOVE AFTER TESTING
+        # self.form_tile(np.array(self.block), " lsystem", 5)
 
  
     def __division(self, limits, iterx=0, itery=0):
@@ -197,5 +218,6 @@ class Shapes:
         self.__division(new_limits[0], iterx+1, itery)
         self.__division(new_limits[1], iterx, itery+1)
 
-s = Shapes()
-s.generate_pattern()
+
+# s = Shapes()
+# s.generate_pattern()
