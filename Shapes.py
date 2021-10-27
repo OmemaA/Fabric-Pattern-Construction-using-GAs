@@ -59,10 +59,11 @@ class Shapes:
         self.polygons = []
         self.colors = []
         self.fracColor = []
-        self.colorPalette = ColorPalette("Reference Images/10.jpg", 5).createPalette()
+        self.colorPalette = ColorPalette("Reference Images/9.jpg", 5).createPalette()
         self.child = child
         # Creating fractals 
-        rule = random.choice([0,1,3,4,5])
+        # rule = random.choice([0,1,3,4,5])
+        rule = 5
         self.design = Lsystem(rules[rule]).get_lines()
         for _ in range(len(self.design)):
             m_fill = random.choice(self.colorPalette)
@@ -130,28 +131,34 @@ class Shapes:
         hstack=np.array(hstack)
         vstack=np.vstack(tuple(hstack))
         img = Image.fromarray(vstack)
+
         img.save('Pattern'+str(name)+'.png', 'PNG')
         # image=img.filter(ImageFilter.ModeFilter(size=25))
         # final=image.filter(ImageFilter.SMOOTH_MORE)
-        # final.save('Pattern'+str(name)+'.png', 'PNG')
+
+        # img.save('Pattern'+str(name)+'.png', 'PNG')
         # img.show()
 
     def generate_pattern(self):
         self.block = Image.new('RGBA', (200,200))
-        m_fill = random.choice(self.colorPalette)
-        m_fill = tuple([int(x*255) for x in m_fill])
-        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=m_fill)
+        # m_fill = random.choice(self.colorPalette)
+        # m_fill = tuple([int(x*255) for x in m_fill])
+        ImageDraw.Draw(self.block).rectangle((0, 0, 200, 200), fill=(255,255,255))
         for i in range(len(self.polygons)):
             ImageDraw.Draw(self.block).polygon(self.polygons[i], fill=self.colors[i])
-        # for i in range(len(self.design)):
-        #     ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
+        
+        for i in range(len(self.design)):
+            ImageDraw.Draw(self.block).line(self.design[i], fill=self.fracColor[i])
         
         # tmp_image = self.block
-        # 50% chance to apply smoothing 
-        if random.choice([1,2]) == 1:
-            self.block = self.block.filter(ImageFilter.ModeFilter(size=25))
-            self.block = self.block.filter(ImageFilter.SMOOTH_MORE)
-        # self.form_tile(np.array(self.block), " lsystem", 5)
+        # 50% chance to apply smoothing
+        # if random.choice([1,2]) == 1:
+        self.block = self.block.filter(ImageFilter.ModeFilter(size=25))
+        self.block = self.block.filter(ImageFilter.SMOOTH_MORE)
+
+
+        self.form_tile(np.array(self.block), " lsystem", 5)
+
  
     def __division(self, limits, iterx=0, itery=0):
         if(iterx == self.iters):
@@ -191,4 +198,4 @@ class Shapes:
         self.__division(new_limits[1], iterx, itery+1)
 
 s = Shapes()
-# s.generate_pattern()
+s.generate_pattern()

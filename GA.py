@@ -1,13 +1,16 @@
+from PIL import ImageDraw
 from ImageQuality import ImageQuality
 from Shapes import Shapes
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
+
 
 class GA:
     def __init__(self):
         self.popSize = 10
-        self.generations = 40
+        self.generations = 30
         self.fitness = None
         self.offsprings = 5
         self.mutationRate = 0.5
@@ -15,8 +18,8 @@ class GA:
         self.iterations = 5
         self.hall_of_fame = 0 # turn it to 1 to activate HOF
         self.hof_list = []
-        self.tileSize = random.choice([5,10,15,20,25,30,35])
-        # self.tileSize = 2
+        # self.tileSize = random.choice([5,10,15,20,25,30,35])
+        self.tileSize = 4
 
     def __initial_population(self):
         population = [Shapes() for _ in range(self.popSize)]
@@ -98,16 +101,17 @@ class GA:
                     print("HOF Fitness Max:", fit[1]," Overall Min Fitness: ",min(self.fitness) , "Tile Size: ", self.tileSize)
                     for x in self.hof_list:
                         print(x)
-                    break    
+                    break 
                 else:
                     for x in chromosomes:
-                        fit = [self.__compute_fitness(i) for i in chromosomes]
+                        fit = max([self.__compute_fitness(i) for i in chromosomes])
                         if self.__compute_fitness(x) == fit:
+                            # for i in range(len(x.design)):
+                            #     ImageDraw.Draw(x.block).line(x.design[i], fill=x.fracColor[i])
                             x.form_tile(np.array(x.block), str(generations), self.tileSize)
-                            print("Fitness Max:", max(fit), "Fitness Min: ", min(fit), "Tile Size: ", self.tileSize)
-                            break                
-            
-            
+                            # print("Fitness Max:", max(fit), "Fitness Min: ", min(fit), "Tile Size: ", self.tileSize)              
+                            break
+    
             for _ in range(self.offsprings): # 5
                 # parent selection
                 parent1, parent2 = self.__random(chromosomes)[:2]

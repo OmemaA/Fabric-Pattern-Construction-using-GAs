@@ -1,6 +1,4 @@
 from math import sin, cos, pi
-import matplotlib.pyplot as pl
-from matplotlib import collections
 
 class Lsystem(object):
     def __init__(self, rule):
@@ -20,7 +18,7 @@ class Lsystem(object):
         d = self.rule['direct']
         a = self.rule['angle']
         p = (0.0, 0.0)
-        l = 1.0
+        l = 1.5
         lines = []
         stack = []
         for c in self.info:
